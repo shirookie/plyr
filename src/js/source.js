@@ -2,7 +2,6 @@
 // Plyr source update
 // ==========================================================================
 
-import { providers } from './config/types';
 import html5 from './html5';
 import media from './media';
 import support from './support';
@@ -54,7 +53,8 @@ const source = {
 
                 // Set the type and provider
                 const { sources, type } = input;
-                const [{ provider = providers.html5, src }] = sources;
+                // TODO: provider is useless
+                const [{ provider = 'html5', src }] = sources;
                 const tagName = provider === 'html5' ? type : 'div';
                 const attributes = provider === 'html5' ? {} : { src };
 
@@ -62,7 +62,7 @@ const source = {
                     provider,
                     type,
                     // Check for support
-                    supported: support.check(type, provider, this.config.playsinline),
+                    supported: support.check(type, provider),
                     // Create new element
                     media: createElement(tagName, attributes),
                 });
@@ -75,35 +75,28 @@ const source = {
                     this.config.autoplay = input.autoplay;
                 }
 
-                // Set attributes for audio and video
-                if (this.isHTML5) {
-                    if (this.config.crossorigin) {
-                        this.media.setAttribute('crossorigin', '');
-                    }
-                    if (this.config.autoplay) {
-                        this.media.setAttribute('autoplay', '');
-                    }
-                    if (!is.empty(input.poster)) {
-                        this.poster = input.poster;
-                    }
-                    if (this.config.loop.active) {
-                        this.media.setAttribute('loop', '');
-                    }
-                    if (this.config.muted) {
-                        this.media.setAttribute('muted', '');
-                    }
-                    if (this.config.playsinline) {
-                        this.media.setAttribute('playsinline', '');
-                    }
+                // Set attributes
+                if (this.config.crossorigin) {
+                    this.media.setAttribute('crossorigin', '');
+                }
+                if (this.config.autoplay) {
+                    this.media.setAttribute('autoplay', '');
+                }
+                if (!is.empty(input.poster)) {
+                    this.poster = input.poster;
+                }
+                if (this.config.loop.active) {
+                    this.media.setAttribute('loop', '');
+                }
+                if (this.config.muted) {
+                    this.media.setAttribute('muted', '');
                 }
 
                 // Restore class hook
                 ui.addStyleHook.call(this);
 
                 // Set new sources for html5
-                if (this.isHTML5) {
-                    source.insertElements.call(this, 'source', sources);
-                }
+                source.insertElements.call(this, 'source', sources);
 
                 // Set video title
                 this.config.title = input.title;
@@ -111,32 +104,11 @@ const source = {
                 // Set up from scratch
                 media.setup.call(this);
 
-                // HTML5 stuff
-                if (this.isHTML5) {
-                    // Setup captions
-                    if (Object.keys(input).includes('tracks')) {
-                        source.insertElements.call(this, 'track', input.tracks);
-                    }
-                }
-
-                // If HTML5 or embed but not fully supported, setupInterface and call ready now
-                if (this.isHTML5 || (this.isEmbed && !this.supported.ui)) {
-                    // Setup interface
-                    ui.build.call(this);
-                }
+                // Setup interface
+                ui.build.call(this);
 
                 // Load HTML5 sources
-                if (this.isHTML5) {
-                    this.media.load();
-                }
-
-                // Reload thumbnails
-                if (this.previewThumbnails) {
-                    this.previewThumbnails.load();
-                }
-
-                // Update the fullscreen support
-                this.fullscreen.update();
+                this.media.load();
             },
             true,
         );

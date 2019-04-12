@@ -9,10 +9,6 @@ import is from './utils/is';
 
 const html5 = {
     getSources() {
-        if (!this.isHTML5) {
-            return [];
-        }
-
         const sources = Array.from(this.media.querySelectorAll('source'));
 
         // Filter out unsupported sources (if type is specified)
@@ -37,10 +33,6 @@ const html5 = {
     },
 
     extend() {
-        if (!this.isHTML5) {
-            return;
-        }
-
         const player = this;
 
         // Quality
@@ -98,10 +90,6 @@ const html5 = {
     // Cancel current network requests
     // See https://github.com/sampotts/plyr/issues/174
     cancelRequests() {
-        if (!this.isHTML5) {
-            return;
-        }
-
         // Remove child sources
         removeElement(html5.getSources.call(this));
 

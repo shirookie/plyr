@@ -5,17 +5,11 @@
 // License: The MIT License (MIT)
 // ==========================================================================
 
-import captions from './captions';
-import defaults from './config/defaults';
-import { pip } from './config/states';
-import { getProviderByUrl, providers, types } from './config/types';
+import defaults from './config';
 import Console from './console';
 import controls from './controls';
-import Fullscreen from './fullscreen';
 import Listeners from './listeners';
 import media from './media';
-import Ads from './plugins/ads';
-import PreviewThumbnails from './plugins/previewThumbnails';
 import source from './source';
 import Storage from './storage';
 import support from './support';
@@ -77,7 +71,6 @@ class Plyr {
         // Elements cache
         this.elements = {
             container: null,
-            captions: null,
             buttons: {},
             display: {},
             progress: {},
@@ -88,18 +81,6 @@ class Plyr {
                 panels: {},
                 buttons: {},
             },
-        };
-
-        // Captions
-        this.captions = {
-            active: null,
-            currentTrack: -1,
-            meta: new WeakMap(),
-        };
-
-        // Fullscreen
-        this.fullscreen = {
-            active: false,
         };
 
         // Options
@@ -150,82 +131,15 @@ class Plyr {
         // Supported: video, audio, vimeo, youtube
         const type = this.media.tagName.toLowerCase();
 
-        // Embed properties
-        let iframe = null;
-        let url = null;
-
         // Different setup based on type
         switch (type) {
-            case 'div':
-                // Find the frame
-                iframe = this.media.querySelector('iframe');
-
-                // <iframe> type
-                if (is.element(iframe)) {
-                    // Detect provider
-                    url = parseUrl(iframe.getAttribute('src'));
-                    this.provider = getProviderByUrl(url.toString());
-
-                    // Rework elements
-                    this.elements.container = this.media;
-                    this.media = iframe;
-
-                    // Reset classname
-                    this.elements.container.className = '';
-
-                    // Get attributes from URL and set config
-                    if (url.search.length) {
-                        const truthy = ['1', 'true'];
-
-                        if (truthy.includes(url.searchParams.get('autoplay'))) {
-                            this.config.autoplay = true;
-                        }
-                        if (truthy.includes(url.searchParams.get('loop'))) {
-                            this.config.loop.active = true;
-                        }
-
-                        // TODO: replace fullscreen.iosNative with this playsinline config option
-                        // YouTube requires the playsinline in the URL
-                        if (this.isYouTube) {
-                            this.config.playsinline = truthy.includes(url.searchParams.get('playsinline'));
-                            this.config.youtube.hl = url.searchParams.get('hl'); // TODO: Should this be setting language?
-                        } else {
-                            this.config.playsinline = true;
-                        }
-                    }
-                } else {
-                    // <div> with attributes
-                    this.provider = this.media.getAttribute(this.config.attributes.embed.provider);
-
-                    // Remove attribute
-                    this.media.removeAttribute(this.config.attributes.embed.provider);
-                }
-
-                // Unsupported or missing provider
-                if (is.empty(this.provider) || !Object.keys(providers).includes(this.provider)) {
-                    this.debug.error('Setup failed: Invalid provider');
-                    return;
-                }
-
-                // Audio will come later for external providers
-                this.type = types.video;
-
-                break;
-
-            case 'video':
             case 'audio':
-                this.type = type;
-                this.provider = providers.html5;
-
                 // Get config from attributes
                 if (this.media.hasAttribute('crossorigin')) {
                     this.config.crossorigin = true;
                 }
                 if (this.media.hasAttribute('autoplay')) {
                     this.config.autoplay = true;
-                }
-                if (this.media.hasAttribute('playsinline') || this.media.hasAttribute('webkit-playsinline')) {
-                    this.config.playsinline = true;
                 }
                 if (this.media.hasAttribute('muted')) {
                     this.config.muted = true;
@@ -240,9 +154,6 @@ class Plyr {
                 this.debug.error('Setup failed: unsupported type');
                 return;
         }
-
-        // Check for support again but with type
-        this.supported = support.check(this.type, this.provider, this.config.playsinline);
 
         // If no support for even API, bail
         if (!this.supported.api) {
@@ -281,24 +192,13 @@ class Plyr {
         }
 
         // Setup interface
-        // If embed but not fully supported, build interface now to avoid flash of controls
-        if (this.isHTML5 || (this.isEmbed && !this.supported.ui)) {
-            ui.build.call(this);
-        }
+        ui.build.call(this);
 
         // Container listeners
         this.listeners.container();
 
         // Global listeners
         this.listeners.global();
-
-        // Setup fullscreen
-        this.fullscreen = new Fullscreen(this);
-
-        // Setup ads if provided
-        if (this.config.ads.enabled) {
-            this.ads = new Ads(this);
-        }
 
         // Autoplay if required
         if (this.config.autoplay) {
@@ -309,6 +209,7 @@ class Plyr {
         this.lastSeekTime = 0;
 
         // Setup preview thumbnails if enabled
+        // TODO: remove
         if (this.config.previewThumbnails.enabled) {
             this.previewThumbnails = new PreviewThumbnails(this);
         }
@@ -317,33 +218,6 @@ class Plyr {
     // ---------------------------------------
     // API
     // ---------------------------------------
-
-    /**
-     * Types and provider helpers
-     */
-    get isHTML5() {
-        return Boolean(this.provider === providers.html5);
-    }
-
-    get isEmbed() {
-        return Boolean(this.isYouTube || this.isVimeo);
-    }
-
-    get isYouTube() {
-        return Boolean(this.provider === providers.youtube);
-    }
-
-    get isVimeo() {
-        return Boolean(this.provider === providers.vimeo);
-    }
-
-    get isVideo() {
-        return Boolean(this.type === types.video);
-    }
-
-    get isAudio() {
-        return Boolean(this.type === types.audio);
-    }
 
     /**
      * Play the media, or play the advertisement (if they are not blocked)
@@ -420,12 +294,8 @@ class Plyr {
      * Stop playback
      */
     stop() {
-        if (this.isHTML5) {
-            this.pause();
-            this.restart();
-        } else if (is.function(this.media.stop)) {
-            this.media.stop();
-        }
+        this.pause();
+        this.restart();
     }
 
     /**
@@ -621,27 +491,6 @@ class Plyr {
     }
 
     /**
-     * Check if the media has audio
-     */
-    get hasAudio() {
-        // Assume yes for all non HTML5 (as we can't tell...)
-        if (!this.isHTML5) {
-            return true;
-        }
-
-        if (this.isAudio) {
-            return true;
-        }
-
-        // Get audio tracks
-        return (
-            Boolean(this.media.mozHasAudio) ||
-            Boolean(this.media.webkitAudioDecodedByteCount) ||
-            Boolean(this.media.audioTracks && this.media.audioTracks.length)
-        );
-    }
-
-    /**
      * Set playback speed
      * @param {Number} speed - the speed of playback (0.5-2.0)
      */
@@ -823,30 +672,6 @@ class Plyr {
     }
 
     /**
-     * Set the poster image for a video
-     * @param {String} input - the URL for the new poster image
-     */
-    set poster(input) {
-        if (!this.isVideo) {
-            this.debug.warn('Poster can only be set for video');
-            return;
-        }
-
-        ui.setPoster.call(this, input, false).catch(() => {});
-    }
-
-    /**
-     * Get the current poster image
-     */
-    get poster() {
-        if (!this.isVideo) {
-            return null;
-        }
-
-        return this.media.getAttribute('poster');
-    }
-
-    /**
      * Set the autoplay state
      * @param {Boolean} input - Whether to autoplay or not
      */
@@ -860,46 +685,6 @@ class Plyr {
      */
     get autoplay() {
         return Boolean(this.config.autoplay);
-    }
-
-    /**
-     * Toggle captions
-     * @param {Boolean} input - Whether to enable captions
-     */
-    toggleCaptions(input) {
-        captions.toggle.call(this, input, false);
-    }
-
-    /**
-     * Set the caption track by index
-     * @param {Number} - Caption index
-     */
-    set currentTrack(input) {
-        captions.set.call(this, input, false);
-    }
-
-    /**
-     * Get the current caption track index (-1 if disabled)
-     */
-    get currentTrack() {
-        const { toggled, currentTrack } = this.captions;
-        return toggled ? currentTrack : -1;
-    }
-
-    /**
-     * Set the wanted language for captions
-     * Since tracks can be added later it won't update the actual caption track until there is a matching track
-     * @param {String} - Two character ISO language code (e.g. EN, FR, PT, etc)
-     */
-    set language(input) {
-        captions.setLanguage.call(this, input, false);
-    }
-
-    /**
-     * Get the current track's language
-     */
-    get language() {
-        return (captions.getCurrentTrack.call(this) || {}).language;
     }
 
     /**
@@ -961,39 +746,6 @@ class Plyr {
     }
 
     /**
-     * Toggle the player controls
-     * @param {Boolean} [toggle] - Whether to show the controls
-     */
-    toggleControls(toggle) {
-        // Don't toggle if missing UI support or if it's audio
-        if (this.supported.ui && !this.isAudio) {
-            // Get state before change
-            const isHidden = hasClass(this.elements.container, this.config.classNames.hideControls);
-
-            // Negate the argument if not undefined since adding the class to hides the controls
-            const force = typeof toggle === 'undefined' ? undefined : !toggle;
-
-            // Apply and get updated state
-            const hiding = toggleClass(this.elements.container, this.config.classNames.hideControls, force);
-
-            // Close menu
-            if (hiding && this.config.controls.includes('settings') && !is.empty(this.config.settings)) {
-                controls.toggleMenu.call(this, false);
-            }
-
-            // Trigger event on change
-            if (hiding !== isHidden) {
-                const eventName = hiding ? 'controlshidden' : 'controlsshown';
-                triggerEvent.call(this, this.media, eventName);
-            }
-
-            return !hiding;
-        }
-
-        return false;
-    }
-
-    /**
      * Add event listeners
      * @param {String} event - Event type
      * @param {Function} callback - Callback for when event occurs
@@ -1044,13 +796,11 @@ class Plyr {
                 if (Object.keys(this.elements).length) {
                     // Remove elements
                     removeElement(this.elements.buttons.play);
-                    removeElement(this.elements.captions);
                     removeElement(this.elements.controls);
                     removeElement(this.elements.wrapper);
 
                     // Clear for GC
                     this.elements.buttons.play = null;
-                    this.elements.captions = null;
                     this.elements.controls = null;
                     this.elements.wrapper = null;
                 }
@@ -1088,38 +838,14 @@ class Plyr {
         // Stop playback
         this.stop();
 
-        // Provider specific stuff
-        if (this.isHTML5) {
-            // Clear timeout
-            clearTimeout(this.timers.loading);
+        // Clear timeout
+        clearTimeout(this.timers.loading);
 
-            // Restore native video controls
-            ui.toggleNativeControls.call(this, true);
+        // Restore native video controls
+        ui.toggleNativeControls.call(this, true);
 
-            // Clean up
-            done();
-        } else if (this.isYouTube) {
-            // Clear timers
-            clearInterval(this.timers.buffering);
-            clearInterval(this.timers.playing);
-
-            // Destroy YouTube API
-            if (this.embed !== null && is.function(this.embed.destroy)) {
-                this.embed.destroy();
-            }
-
-            // Clean up
-            done();
-        } else if (this.isVimeo) {
-            // Destroy Vimeo API
-            // then clean up (wait, to prevent postmessage errors)
-            if (this.embed !== null) {
-                this.embed.unload().then(done);
-            }
-
-            // Vimeo does not always return
-            setTimeout(done, 200);
-        }
+        // Clean up
+        done();
     }
 
     /**
@@ -1134,10 +860,9 @@ class Plyr {
      * Check for support
      * @param {String} type - Player type (audio/video)
      * @param {String} provider - Provider (html5/youtube/vimeo)
-     * @param {Boolean} inline - Where player has `playsinline` sttribute
      */
-    static supported(type, provider, inline) {
-        return support.check(type, provider, inline);
+    static supported(type, provider) {
+        return support.check(type, provider);
     }
 
     /**

@@ -1,7 +1,7 @@
 {
-    "name": "plyr",
-    "version": "3.5.2",
-    "description": "A simple, accessible and customizable HTML5, YouTube and Vimeo media player",
+    "name": "vue-aplyr",
+    "version": "1.0.0",
+    "description": "A simple, accessible and customizable HTML5 audio player",
     "homepage": "https://plyr.io",
     "author": "Sam Potts <sam@potts.es>",
     "main": "dist/plyr.js",

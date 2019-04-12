@@ -18,10 +18,6 @@ const defaults = {
     // Only allow one media playing at once (vimeo only)
     autopause: true,
 
-    // Allow inline playback on iOS (this effects YouTube/Vimeo - HTML5 requires the attribute present)
-    // TODO: Remove iosNative fullscreen option in favour of this (logic needs work)
-    playsinline: true,
-
     // Default time to skip when rewind/fast forward
     seekTime: 10,
 
@@ -58,11 +54,13 @@ const defaults = {
     disableContextMenu: true,
 
     // Sprite (for icons)
+    // TODO: replace
     loadSprite: true,
     iconPrefix: 'plyr',
     iconUrl: 'https://cdn.plyr.io/3.5.2/plyr.svg',
 
     // Blank video (used to prevent errors on source change)
+    // TODO: handler errors instead of loading more source
     blankVideo: 'https://cdn.plyr.io/static/blank.mp4',
 
     // Quality default
@@ -97,6 +95,7 @@ const defaults = {
     },
 
     // Captions settings
+    // TODO: remove
     captions: {
         active: false,
         language: 'auto',
@@ -106,6 +105,7 @@ const defaults = {
     },
 
     // Fullscreen settings
+    // TODO: remove
     fullscreen: {
         enabled: true, // Allow fullscreen?
         fallback: true, // Fallback using full viewport/window
@@ -129,16 +129,17 @@ const defaults = {
         'current-time',
         'mute',
         'volume',
-        'captions',
-        'settings',
-        'pip',
-        'airplay',
+        'captions', // TODO: remove
+        'settings', // TODO: remove maybe
+        'pip', // TODO: what is this ? python ?
+        'airplay', // TODO: interesting
         // 'download',
-        'fullscreen',
+        'fullscreen', // TODO: remove useless
     ],
     settings: ['captions', 'quality', 'speed'],
 
     // Localisation
+    // TODO: is this log?
     i18n: {
         restart: 'Restart',
         rewind: 'Rewind {seektime}s',
@@ -185,6 +186,7 @@ const defaults = {
     },
 
     // URLs
+    // TODO: remove all maybe
     urls: {
         download: null,
         vimeo: {
@@ -387,48 +389,12 @@ const defaults = {
     },
 
     // Embed attributes
+    // TODO: remove?
     attributes: {
         embed: {
             provider: 'data-plyr-provider',
             id: 'data-plyr-embed-id',
         },
-    },
-
-    // API keys
-    keys: {
-        google: null,
-    },
-
-    // Advertisements plugin
-    // Register for an account here: http://vi.ai/publisher-video-monetization/?aid=plyrio
-    ads: {
-        enabled: false,
-        publisherId: '',
-        tagUrl: '',
-    },
-
-    // Preview Thumbnails plugin
-    previewThumbnails: {
-        enabled: false,
-        src: '',
-    },
-
-    // Vimeo plugin
-    vimeo: {
-        byline: false,
-        portrait: false,
-        title: false,
-        speed: true,
-        transparent: false,
-    },
-
-    // YouTube plugin
-    youtube: {
-        noCookie: false, // Whether to use an alternative version of YouTube without cookies
-        rel: 0, // No related vids
-        showinfo: 0, // Hide info
-        iv_load_policy: 3, // Hide annotations
-        modestbranding: 1, // Hide logos as much as possible (they still show one in the corner when paused)
     },
 };
 

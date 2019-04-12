@@ -12,3 +12,5 @@ const browser = {
 };
 
 export default browser;
+
+export const inBrowser = typeof window !== 'undefined';

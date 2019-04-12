@@ -4,7 +4,6 @@
 // ==========================================================================
 
 import RangeTouch from 'rangetouch';
-import captions from './captions';
 import html5 from './html5';
 import support from './support';
 import { repaint, transitionEndEvent } from './utils/animation';
@@ -61,8 +60,6 @@ const controls = {
                 pip: getElement.call(this, this.config.selectors.buttons.pip),
                 airplay: getElement.call(this, this.config.selectors.buttons.airplay),
                 settings: getElement.call(this, this.config.selectors.buttons.settings),
-                captions: getElement.call(this, this.config.selectors.buttons.captions),
-                fullscreen: getElement.call(this, this.config.selectors.buttons.fullscreen),
             };
 
             // Progress
@@ -221,14 +218,6 @@ const controls = {
                 props.labelPressed = 'unmute';
                 props.icon = 'volume';
                 props.iconPressed = 'muted';
-                break;
-
-            case 'captions':
-                props.toggle = true;
-                props.label = 'enableCaptions';
-                props.labelPressed = 'disableCaptions';
-                props.icon = 'captions-off';
-                props.iconPressed = 'captions-on';
                 break;
 
             case 'fullscreen':
@@ -815,27 +804,23 @@ const controls = {
         let value = null;
         let list = container;
 
-        if (setting === 'captions') {
-            value = this.currentTrack;
-        } else {
-            value = !is.empty(input) ? input : this[setting];
+        value = !is.empty(input) ? input : this[setting];
 
-            // Get default
-            if (is.empty(value)) {
-                value = this.config[setting].default;
-            }
+        // Get default
+        if (is.empty(value)) {
+            value = this.config[setting].default;
+        }
 
-            // Unsupported value
-            if (!is.empty(this.options[setting]) && !this.options[setting].includes(value)) {
-                this.debug.warn(`Unsupported value of '${value}' for ${setting}`);
-                return;
-            }
+        // Unsupported value
+        if (!is.empty(this.options[setting]) && !this.options[setting].includes(value)) {
+            this.debug.warn(`Unsupported value of '${value}' for ${setting}`);
+            return;
+        }
 
-            // Disabled value
-            if (!this.config[setting].options.includes(value)) {
-                this.debug.warn(`Disabled value of '${value}' for ${setting}`);
-                return;
-            }
+        // Disabled value
+        if (!this.config[setting].options.includes(value)) {
+            this.debug.warn(`Disabled value of '${value}' for ${setting}`);
+            return;
         }
 
         // Get the list if we need to
@@ -878,9 +863,6 @@ const controls = {
                 }
 
                 return toTitleCase(value);
-
-            case 'captions':
-                return captions.getLabel.call(this);
 
             default:
                 return null;
@@ -991,62 +973,6 @@ const controls = {
         });
     }, */
 
-    // Get current selected caption language
-    // TODO: rework this to user the getter in the API?
-
-    // Set a list of available captions languages
-    setCaptionsMenu() {
-        // Menu required
-        if (!is.element(this.elements.settings.panels.captions)) {
-            return;
-        }
-
-        // TODO: Captions or language? Currently it's mixed
-        const type = 'captions';
-        const list = this.elements.settings.panels.captions.querySelector('[role="menu"]');
-        const tracks = captions.getTracks.call(this);
-        const toggle = Boolean(tracks.length);
-
-        // Toggle the pane and tab
-        controls.toggleMenuButton.call(this, type, toggle);
-
-        // Empty the menu
-        emptyElement(list);
-
-        // Check if we need to toggle the parent
-        controls.checkMenu.call(this);
-
-        // If there's no captions, bail
-        if (!toggle) {
-            return;
-        }
-
-        // Generate options data
-        const options = tracks.map((track, value) => ({
-            value,
-            checked: this.captions.toggled && this.currentTrack === value,
-            title: captions.getLabel.call(this, track),
-            badge: track.language && controls.createBadge.call(this, track.language.toUpperCase()),
-            list,
-            type: 'language',
-        }));
-
-        // Add the "Disabled" option to turn off captions
-        options.unshift({
-            value: -1,
-            checked: !this.captions.toggled,
-            title: i18n.get('disabled', this.config),
-            list,
-            type: 'language',
-        });
-
-        // Generate options
-        options.forEach(controls.createMenuItem.bind(this));
-
-        controls.updateSetting.call(this, type, list);
-    },
-
-    // Set a list of available captions languages
     setSpeedMenu(options) {
         // Menu required
         if (!is.element(this.elements.settings.panels.speed)) {
@@ -1059,7 +985,7 @@ const controls = {
         // Set the speed options
         if (is.array(options)) {
             this.options.speed = options;
-        } else if (this.isHTML5 || this.isVimeo) {
+        } else {
             this.options.speed = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
         }
 
@@ -1364,11 +1290,6 @@ const controls = {
             container.appendChild(volume);
         }
 
-        // Toggle captions button
-        if (this.config.controls.includes('captions')) {
-            container.appendChild(controls.createButton.call(this, 'captions'));
-        }
-
         // Settings button / menu
         if (this.config.controls.includes('settings') && !is.empty(this.config.settings)) {
             const control = createElement('div', {
@@ -1543,13 +1464,6 @@ const controls = {
 
             const { download } = this.config.urls;
 
-            if (!is.url(download) && this.isEmbed) {
-                extend(attributes, {
-                    icon: `logo-${this.provider}`,
-                    label: this.provider,
-                });
-            }
-
             container.appendChild(controls.createButton.call(this, 'download', attributes));
         }
 
@@ -1566,9 +1480,7 @@ const controls = {
         this.elements.controls = container;
 
         // Set available quality levels
-        if (this.isHTML5) {
-            controls.setQualityMenu.call(this, html5.getQualityOptions.call(this));
-        }
+        controls.setQualityMenu.call(this, html5.getQualityOptions.call(this));
 
         controls.setSpeedMenu.call(this);
 
@@ -1622,7 +1534,6 @@ const controls = {
                 seektime: this.config.seekTime,
                 speed: this.speed,
                 quality: this.quality,
-                captions: captions.getLabel.call(this),
                 // TODO: Looping
                 // loop: 'None',
             });
@@ -1662,7 +1573,7 @@ const controls = {
             target = this.elements.container;
         }
 
-        // Inject controls HTML (needs to be before captions, hence "afterbegin")
+        // Inject controls HTML
         const insertMethod = is.element(container) ? 'insertAdjacentElement' : 'insertAdjacentHTML';
         target[insertMethod]('afterbegin', container);
 
