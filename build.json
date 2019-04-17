@@ -1,16 +1,16 @@
 {
     "js": {
-        "plyr.js": {
-            "src": "./src/js/plyr.js",
+        "aplyr.js": {
+            "src": "./src/js/aplyr.js",
             "dist": "./dist/",
             "formats": ["es", "umd"],
-            "namespace": "Plyr"
+            "namespace": "APlyr"
         },
-        "plyr.polyfilled.js": {
-            "src": "./src/js/plyr.polyfilled.js",
+        "aplyr.polyfilled.js": {
+            "src": "./src/js/aplyr.polyfilled.js",
             "dist": "./dist/",
             "formats": ["es", "umd"],
-            "namespace": "Plyr"
+            "namespace": "APlyr"
         },
         "demo.js": {
             "src": "./demo/src/js/demo.js",
@@ -20,8 +20,8 @@
         }
     },
     "css": {
-        "plyr.css": {
-            "src": "./src/sass/plyr.scss",
+        "aplyr.css": {
+            "src": "./src/sass/aplyr.scss",
             "dist": "./dist/"
         },
         "demo.css": {
@@ -34,7 +34,7 @@
         }
     },
     "sprite": {
-        "plyr.svg": {
+        "aplyr.svg": {
             "src": "./src/sprite/*.svg",
             "dist": "./dist"
         },

@@ -1,5 +1,12 @@
-import { inBrowser } from './js/utils/browser';
+import { inBrowser } from './util/browser';
 import VueAPlyr from './VueAPlyr.vue';
+// controls
+import VueAPlyrButton from './_controls/button.vue';
+import VueAPlyrProgress from './_controls/progress.vue';
+import VueAPlyrRange from './_controls/range.vue';
+import VueAPlyrTooltip from './_controls/tooltip.vue';
+import VueAPlyrVolume from './_controls/volume.vue';
+import VuePlyrTime from './_controls/time.vue';
 
 export let _Vue;
 
@@ -16,5 +23,14 @@ if (inBrowser && window.Vue) {
     window.Vue.use(install);
 }
 
-export { VueAPlyr };
+export {
+    VueAPlyr,
+    // controls
+    VueAPlyrButton,
+    VueAPlyrProgress,
+    VueAPlyrRange,
+    VueAPlyrTooltip,
+    VueAPlyrVolume,
+    VuePlyrTime,
+};
 export default install;

@@ -1,5 +1,5 @@
 // ==========================================================================
-// Plyr.io Demo Page
+// Demo Page
 // ==========================================================================
 @charset 'UTF-8';
 
@@ -9,7 +9,7 @@
 @import '../settings/cosmetic';
 @import '../settings/icons';
 @import '../settings/layout';
-@import '../settings/plyr';
+@import '../settings/aplyr';
 @import '../settings/spacing';
 @import '../settings/type';
 
@@ -38,8 +38,8 @@
 @import '../components/navigation';
 @import '../components/players';
 
-// Plyr
-@import '../../../../src/sass/plyr';
+// APlyr
+@import '../../../../src/sass/aplyr';
 
 // Utils
 @import '../utilities/cosmetic';

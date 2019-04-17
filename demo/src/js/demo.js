@@ -4,61 +4,64 @@
 // Please see readme.md in the root or github.com/sampotts/plyr
 // ==========================================================================
 
-import Raven from 'raven-js';
-import Plyr from '../../../src/js/plyr';
+// import Raven from 'raven-js';
+// import Plyr from '../../../src/js/plyr';
+
+import Vue from 'vue';
+import VueAPlyr from '../../../dist/vue-aplyr';
+import {
+    VueAPlyrButton,
+    VueAPlyrProgress,
+    VuePlyrTime,
+} from '../../../dist/vue-aplyr';
+
+Vue.use(VueAPlyr);
 
 (() => {
-    const { host } = window.location;
-    const env = {
-        prod: host === 'plyr.io',
-        dev: host === 'dev.plyr.io',
-    };
-
     document.addEventListener('DOMContentLoaded', () => {
-        Raven.context(() => {
-            const selector = '#player';
-            const container = document.getElementById('container');
-
-            if (window.Shr) {
-                window.Shr.setup('.js-shr-button', {
-                    count: {
-                        classname: 'button__count',
+        window.vm = new Vue({
+            el: '#app',
+            data: {
+                title: 'VueAPlyr',
+                sources: [
+                    {
+                        src: 'https://cdn.plyr.io/static/demo/Kishi_Bashi_-_It_All_Began_With_a_Burst.mp3',
+                        type: 'audio/mp3',
                     },
-                });
-            }
-
-            // Setup tab focus
-            const tabClassName = 'tab-focus';
-
-            // Remove class on blur
-            document.addEventListener('focusout', event => {
-                if (!event.target.classList || container.contains(event.target)) {
-                    return;
+                    {
+                        src: 'https://cdn.plyr.io/static/demo/Kishi_Bashi_-_It_All_Began_With_a_Burst.ogg',
+                        type: 'audio/ogg',
+                    },
+                ],
+                speeds: [0.5, 1.0, 2.0],
+            },
+            mounted () {
+                // github count
+                if (window.Shr) {
+                    window.Shr.setup('.js-shr-button', {
+                        count: {
+                            classname: 'button__count',
+                        },
+                    });
                 }
-
-                event.target.classList.remove(tabClassName);
-            });
-
-            // Add classname to tabbed elements
-            document.addEventListener('keydown', event => {
-                if (event.keyCode !== 9) {
-                    return;
-                }
-
-                // Delay the adding of classname until the focus has changed
-                // This event fires before the focusin event
-                setTimeout(() => {
-                    const focused = document.activeElement;
-
-                    if (!focused || !focused.classList || container.contains(focused)) {
-                        return;
-                    }
-
-                    focused.classList.add(tabClassName);
-                }, 10);
-            });
-
-            // Setup the player
+            },
+            methods: {
+                eventHandler(type, e) {
+                    console.log('on ' + type + '...', e);
+                },
+                speedup(val) {
+                    console.log('speedup to ' + val);
+                    this.$refs.player.speed = val;
+                },
+            },
+            components: {
+                'v-aplyr-button': VueAPlyrButton,
+                'v-aplyr-progress': VueAPlyrProgress,
+                'v-aplyr-time': VuePlyrTime,
+            },
+        });
+        return;
+        Raven.context(() => {
             const player = new Plyr(selector, {
                 debug: true,
                 title: 'View From A Blue Moon',
@@ -69,23 +72,6 @@ import Plyr from '../../../src/js/plyr';
                 tooltips: {
                     controls: true,
                 },
-                captions: {
-                    active: true,
-                },
-                keys: {
-                    google: 'AIzaSyDrNwtN3nLH_8rjCmu5Wq3ZCm4MNAVdc0c',
-                },
-                ads: {
-                    enabled: env.prod || env.dev,
-                    publisherId: '918848828995742',
-                },
-                previewThumbnails: {
-                    enabled: true,
-                    src: [
-                        'https://cdn.plyr.io/static/demo/thumbs/100p.vtt',
-                        'https://cdn.plyr.io/static/demo/thumbs/240p.vtt',
-                    ],
-                },
             });
 
             // Expose for tinkering in the console
@@ -94,10 +80,7 @@ import Plyr from '../../../src/js/plyr';
             // Setup type toggle
             const buttons = document.querySelectorAll('[data-source]');
             const types = {
-                video: 'video',
                 audio: 'audio',
-                youtube: 'youtube',
-                vimeo: 'vimeo',
             };
             let currentType = window.location.hash.replace('#', '');
             const historySupport = window.history && window.history.pushState;
@@ -121,52 +104,6 @@ import Plyr from '../../../src/js/plyr';
                 }
 
                 switch (type) {
-                    case types.video:
-                        player.source = {
-                            type: 'video',
-                            title: 'View From A Blue Moon',
-                            sources: [
-                                {
-                                    src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-576p.mp4',
-                                    type: 'video/mp4',
-                                    size: 576,
-                                },
-                                {
-                                    src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-720p.mp4',
-                                    type: 'video/mp4',
-                                    size: 720,
-                                },
-                                {
-                                    src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-1080p.mp4',
-                                    type: 'video/mp4',
-                                    size: 1080,
-                                },
-                                {
-                                    src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-1440p.mp4',
-                                    type: 'video/mp4',
-                                    size: 1440,
-                                },
-                            ],
-                            poster: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.jpg',
-                            tracks: [
-                                {
-                                    kind: 'captions',
-                                    label: 'English',
-                                    srclang: 'en',
-                                    src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.en.vtt',
-                                    default: true,
-                                },
-                                {
-                                    kind: 'captions',
-                                    label: 'French',
-                                    srclang: 'fr',
-                                    src: 'https://cdn.plyr.io/static/demo/View_From_A_Blue_Moon_Trailer-HD.fr.vtt',
-                                },
-                            ],
-                        };
-
-                        break;
-
                     case types.audio:
                         player.source = {
                             type: 'audio',
@@ -184,104 +121,11 @@ import Plyr from '../../../src/js/plyr';
                         };
 
                         break;
-
-                    case types.youtube:
-                        player.source = {
-                            type: 'video',
-                            sources: [
-                                {
-                                    src: 'https://youtube.com/watch?v=bTqVqk7FSmY',
-                                    provider: 'youtube',
-                                },
-                            ],
-                        };
-
-                        break;
-
-                    case types.vimeo:
-                        player.source = {
-                            type: 'video',
-                            sources: [
-                                {
-                                    src: 'https://vimeo.com/76979871',
-                                    provider: 'vimeo',
-                                },
-                            ],
-                        };
-
-                        break;
-
                     default:
                         break;
                 }
-
-                // Set the current type for next time
-                currentType = type;
-
-                // Remove active classes
-                Array.from(buttons).forEach(button => toggleClass(button.parentElement, 'active', false));
-
-                // Set active on parent
-                toggleClass(document.querySelector(`[data-source="${type}"]`), 'active', true);
-
-                // Show cite
-                Array.from(document.querySelectorAll('.plyr__cite')).forEach(cite => {
-                    cite.setAttribute('hidden', '');
-                });
-                document.querySelector(`.plyr__cite--${type}`).removeAttribute('hidden');
             }
 
-            // Bind to each button
-            Array.from(buttons).forEach(button => {
-                button.addEventListener('click', () => {
-                    const type = button.getAttribute('data-source');
-
-                    newSource(type);
-
-                    if (historySupport) {
-                        window.history.pushState({ type }, '', `#${type}`);
-                    }
-                });
-            });
-
-            // List for backwards/forwards
-            window.addEventListener('popstate', event => {
-                if (event.state && 'type' in event.state) {
-                    newSource(event.state.type);
-                }
-            });
-
-            // On load
-            if (historySupport) {
-                const video = !currentType.length;
-
-                // If there's no current type set, assume video
-                if (video) {
-                    currentType = types.video;
-                }
-
-                // Replace current history state
-                if (currentType in types) {
-                    window.history.replaceState(
-                        {
-                            type: currentType,
-                        },
-                        '',
-                        video ? '' : `#${currentType}`,
-                    );
-                }
-
-                // If it's not video, load the source
-                if (currentType !== types.video) {
-                    newSource(currentType, true);
-                }
-            }
         });
     });
-
-    // Raven / Sentry
-    // For demo site (https://plyr.io) only
-    if (env.prod) {
-        Raven.config('https://d4ad9866ad834437a4754e23937071e4@sentry.io/305555').install();
-    }
 })();
