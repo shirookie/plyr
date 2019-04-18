@@ -2,12 +2,13 @@
     <input
         ref="input"
         type="range"
-        min="0"
-        max="100"
-        step="0.01"
+        :min="min"
+        :max="max"
+        :step="step"
         autocomplete="off"
         role="slider"
         v-model="model"
+        :style="{ '--value': displayVal }"
         >
 </template>
 
@@ -21,7 +22,18 @@ export default {
             type: String,
             required: true,
         },
-        value: null,
+        value: {
+            default: 0,
+        },
+        max: {
+            default: 100,
+        },
+        min: {
+            default: 0,
+        },
+        step: {
+            default: 0.01,
+        },
     },
     data() {
         return {
@@ -38,11 +50,13 @@ export default {
                 this.currentVal = val;
                 this.$emit('input', val);
             },
-        }
+        },
+        displayVal() {
+            return (this.model / this.max * 100) + '%';
+        },
     },
     watch: {
-        value(newVal, oldVal) {
-            if (newVal == oldVal) return;
+        value(newVal) {
             this.model = newVal;
         },
     },

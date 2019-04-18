@@ -1,5 +1,5 @@
 <template>
-<div class="plyr plyr--full-ui plyr--audio plyr--html5 plyr--playing plyr--loading">
+<div class="plyr plyr--full-ui plyr--audio plyr--html5">
     <slot name="controls">
         <div class="plyr__controls">
             <component

@@ -1,5 +1,5 @@
 <template>
-<span>{{ displayTime }}</span>
+<span class="plyr__time">{{ displayTime }}</span>
 </template>
 
 <script>
