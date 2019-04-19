@@ -1,3 +1,5 @@
+import VClickOutside from 'v-click-outside';
+
 import { inBrowser } from './util/browser';
 import VueAPlyr from './VueAPlyr.vue';
 // controls
@@ -6,7 +8,8 @@ import VueAPlyrProgress from './_controls/progress.vue';
 import VueAPlyrRange from './_controls/range.vue';
 import VueAPlyrTooltip from './_controls/tooltip.vue';
 import VueAPlyrVolume from './_controls/volume.vue';
-import VuePlyrTime from './_controls/time.vue';
+import VueAPlyrTime from './_controls/time.vue';
+import VueAPlyrMenu from './_controls/menu.vue';
 
 export let _Vue;
 
@@ -16,6 +19,7 @@ function install (Vue) {
 
     _Vue = Vue;
 
+    Vue.use(VClickOutside);
     Vue.component('v-aplyr', VueAPlyr);
 }
 
@@ -31,6 +35,7 @@ export {
     VueAPlyrRange,
     VueAPlyrTooltip,
     VueAPlyrVolume,
-    VuePlyrTime,
+    VueAPlyrTime,
+    VueAPlyrMenu,
 };
 export default install;

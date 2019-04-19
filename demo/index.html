@@ -114,13 +114,9 @@
                                 <v-aplyr-time control="currentTime"></v-aplyr-time>
                                 <v-aplyr-time control="duration"></v-aplyr-time>
                             </div>
-                            <!-- <button
-                                v-for="(s, i) in speeds"
-                                :key="i"
-                                @click="speedup(s)"
-                                >
-                                X{{ s }} 倍速
-                            </button> -->
+                            <v-aplyr-menu class="plyr__menu">
+                                <span slot-scope="{ selected }">{{ selected }}×</span>
+                            </v-aplyr-menu>
                         </div>
                     </v-aplyr>
                 </div>

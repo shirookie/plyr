@@ -12,7 +12,8 @@ import VueAPlyr from '../../../dist/vue-aplyr';
 import {
     VueAPlyrButton,
     VueAPlyrProgress,
-    VuePlyrTime,
+    VueAPlyrTime,
+    VueAPlyrMenu,
 } from '../../../dist/vue-aplyr';
 
 Vue.use(VueAPlyr);
@@ -57,7 +58,8 @@ Vue.use(VueAPlyr);
             components: {
                 'v-aplyr-button': VueAPlyrButton,
                 'v-aplyr-progress': VueAPlyrProgress,
-                'v-aplyr-time': VuePlyrTime,
+                'v-aplyr-time': VueAPlyrTime,
+                'v-aplyr-menu': VueAPlyrMenu,
             },
         });
         return;
