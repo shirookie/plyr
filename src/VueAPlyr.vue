@@ -69,6 +69,9 @@ export default {
             computedVal: {},
         };
     },
+    created() {
+        console.log('new aplyr created!!!');
+    },
     computed: {
         renderControls() {
             return this.options.controls

@@ -24,6 +24,7 @@ Vue.use(VueAPlyr);
             el: '#app',
             data: {
                 title: 'VueAPlyr',
+                cur: 0,
                 sources: [
                     {
                         src: 'https://cdn.plyr.io/static/demo/Kishi_Bashi_-_It_All_Began_With_a_Burst.mp3',
@@ -53,6 +54,9 @@ Vue.use(VueAPlyr);
                 speedup(val) {
                     console.log('speedup to ' + val);
                     this.$refs.player.speed = val;
+                },
+                next() {
+                    this.cur = (this.cur + 1) % this.sources.length;
                 },
             },
             components: {

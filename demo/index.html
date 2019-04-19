@@ -98,27 +98,30 @@
 
             <main>
                 <div id="container">
-                    <v-aplyr
-                        ref="player"
-                        src="https://cdn.plyr.io/static/demo/Kishi_Bashi_-_It_All_Began_With_a_Burst.mp3"
-                        type="audio/mp3"
-                        @play="eventHandler('play', $event)"
-                        >
-                        <div slot="controls" class="plyr__controls">
-                            <v-aplyr-button class="plyr__control" control="play">
-                                <i class="iconfont icon-play"></i>
-                                <i slot="toggled" class="iconfont icon-pause"></i>
-                            </v-aplyr-button>
-                            <v-aplyr-progress class="plyr__progress"></v-aplyr-progress>
-                            <div>
-                                <v-aplyr-time control="currentTime"></v-aplyr-time>
-                                <v-aplyr-time control="duration"></v-aplyr-time>
+                    <button @click="next">切换下一首</button>
+                    <keep-alive>
+                        <v-aplyr
+                            :key="cur"
+                            :src="sources[cur].src"
+                            :type="sources[cur].type"
+                            @play="eventHandler('play', $event)"
+                            >
+                            <div slot="controls" class="plyr__controls">
+                                <v-aplyr-button class="plyr__control" control="play">
+                                    <i class="iconfont icon-play"></i>
+                                    <i slot="toggled" class="iconfont icon-pause"></i>
+                                </v-aplyr-button>
+                                <v-aplyr-progress class="plyr__progress"></v-aplyr-progress>
+                                <div>
+                                    <v-aplyr-time control="currentTime"></v-aplyr-time>
+                                    <v-aplyr-time control="duration"></v-aplyr-time>
+                                </div>
+                                <v-aplyr-menu class="plyr__menu">
+                                    <span slot-scope="{ selected }">{{ selected }}×</span>
+                                </v-aplyr-menu>
                             </div>
-                            <v-aplyr-menu class="plyr__menu">
-                                <span slot-scope="{ selected }">{{ selected }}×</span>
-                            </v-aplyr-menu>
-                        </div>
-                    </v-aplyr>
+                        </v-aplyr>
+                    </keep-alive>
                 </div>
             </main>
         </div>
