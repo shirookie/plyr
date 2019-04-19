@@ -13,14 +13,30 @@ import VueAPlyrMenu from './_controls/menu.vue';
 
 export let _Vue;
 
-function install (Vue) {
+const controls = {
+    'button': VueAPlyrButton,
+    'progress': VueAPlyrProgress,
+    'range': VueAPlyrRange,
+    'tooltip': VueAPlyrTooltip,
+    'volume': VueAPlyrVolume,
+    'time': VueAPlyrTime,
+    'menu': VueAPlyrMenu,
+};
+
+function install (Vue, options) {
     if (install.installed && _Vue === Vue) return;
     install.installed = true;
 
     _Vue = Vue;
 
+    // directive deps
     Vue.use(VClickOutside);
+    // main
     Vue.component('v-aplyr', VueAPlyr);
+    // controls
+    options.controls.forEach(ctrl => {
+        Vue.component('v-aplyr-' + ctrl, controls[ctrl]);
+    });
 }
 
 if (inBrowser && window.Vue) {

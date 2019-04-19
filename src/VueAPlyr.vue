@@ -117,10 +117,16 @@ export default {
             this.$delete(this.controls, name);
         },
         play() {
-            this.player.play();
+            let promise = this.player.play();
+            if (promise !== undefined) {
+                promise.then(_ => {}).catch(err => {});
+            }
         },
         pause() {
-            this.player.pause();
+            let promise = this.player.pause();
+            if (promise !== undefined) {
+                promise.then(_ => {}).catch(err => {});
+            }
         },
         togglePlay() {
             // TODO:

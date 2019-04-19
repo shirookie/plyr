@@ -9,14 +9,10 @@
 
 import Vue from 'vue';
 import VueAPlyr from '../../../dist/vue-aplyr';
-import {
-    VueAPlyrButton,
-    VueAPlyrProgress,
-    VueAPlyrTime,
-    VueAPlyrMenu,
-} from '../../../dist/vue-aplyr';
 
-Vue.use(VueAPlyr);
+Vue.use(VueAPlyr, {
+    controls: ['button', 'progress', 'time', 'menu'],
+});
 
 (() => {
     document.addEventListener('DOMContentLoaded', () => {
@@ -58,12 +54,6 @@ Vue.use(VueAPlyr);
                 next() {
                     this.cur = (this.cur + 1) % this.sources.length;
                 },
-            },
-            components: {
-                'v-aplyr-button': VueAPlyrButton,
-                'v-aplyr-progress': VueAPlyrProgress,
-                'v-aplyr-time': VueAPlyrTime,
-                'v-aplyr-menu': VueAPlyrMenu,
             },
         });
         return;
