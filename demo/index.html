@@ -107,16 +107,16 @@
                             @play="eventHandler('play', $event)"
                             >
                             <div slot="controls" class="plyr__controls">
-                                <v-aplyr-button class="plyr__control" control="play">
+                                <v-aplyr-button control="play">
                                     <i class="iconfont icon-play"></i>
                                     <i slot="toggled" class="iconfont icon-pause"></i>
                                 </v-aplyr-button>
-                                <v-aplyr-progress class="plyr__progress"></v-aplyr-progress>
+                                <v-aplyr-progress></v-aplyr-progress>
                                 <div>
                                     <v-aplyr-time control="currentTime"></v-aplyr-time>
                                     <v-aplyr-time control="duration"></v-aplyr-time>
                                 </div>
-                                <v-aplyr-menu class="plyr__menu">
+                                <v-aplyr-menu>
                                     <span slot-scope="{ selected }">{{ selected }}×</span>
                                 </v-aplyr-menu>
                             </div>

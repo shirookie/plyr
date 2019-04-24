@@ -1,5 +1,6 @@
 <template>
 <div
+    class="plyr__progress"
     :class="{ 'plyr--loading': loading }"
     >
     <v-aplyr-range

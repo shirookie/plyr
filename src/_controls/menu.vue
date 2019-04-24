@@ -1,5 +1,5 @@
 <template>
-<div v-click-outside="closeMenu">
+<div class="plyr__menu" v-click-outside="closeMenu">
     <button class="plyr__control" type="button" @click="opened = !opened">
         <slot v-bind="controls.length == 1 ? { 'selected': config[controls[0]].selected } : {}">{{ label }}</slot>
     </button>

@@ -1,5 +1,6 @@
 <template>
 <button
+    class="plyr__control"
     :type="type"
     @click="toggle(false)"
     >
