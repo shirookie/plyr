@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "description": "A simple, accessible and customizable HTML5 audio player",
     "author": "KIO",
-    "main": "dist/aplyr.js",
+    "main": "dist/vue-aplyr.js",
     "sass": "src/sass/aplyr.scss",
-    "style": "dist/aplyr.css",
+    "style": "dist/vue-aplyr.css",
     "keywords": [
         "HTML5 Audio",
         "Media Player"
